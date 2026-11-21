@@ -5,6 +5,9 @@ import { getApprovedBattles } from '@/lib/db';
 import BattleFilterList from '@/components/BattleFilterList';
 
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export default async function BattlesPage() {
   const battles = await getApprovedBattles();
 

@@ -4,6 +4,9 @@ import AdminDashboardClient from '@/components/admin/AdminDashboardClient';
 import AdminLoginForm from '@/components/admin/AdminLoginForm';
 
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export default async function AdminPage() {
   const isAuth = await verifyAdminAuth();
 

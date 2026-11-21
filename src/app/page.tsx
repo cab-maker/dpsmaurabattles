@@ -6,6 +6,9 @@ import { getPublicAnnouncements, getApprovedBattles, getLeaderboard } from '@/li
 import AnnouncementBanner from '@/components/AnnouncementBanner';
 import BattleCard from '@/components/BattleCard';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export default async function HomePage() {
   const [announcements, battles, leaderboard] = await Promise.all([
     getPublicAnnouncements(),

@@ -4,6 +4,9 @@ import { Trophy, Medal, Crown, Flame, Swords, ArrowRight } from 'lucide-react';
 import { getLeaderboard, getCompletedBattleHistory } from '@/lib/db';
 
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export default async function LeaderboardPage() {
   const [leaderboard, history] = await Promise.all([
     getLeaderboard(),
