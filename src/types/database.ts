@@ -34,6 +34,8 @@ export interface Battle {
   approved_at: string | null;
   created_at: string;
   updated_at: string;
+  votes_person_one?: number;
+  votes_person_two?: number;
   location?: Location | null;
 }
 
