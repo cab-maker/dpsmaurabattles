@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+:root {
+  --background: #060709;
+  --foreground: #f4f4f6;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  selection-background-color: rgba(236, 72, 153, 0.3);
+}
+
+/* Tasteful, smooth rainbow aura gradient text */
+.aura-text {
+  background: linear-gradient(
+    135deg,
+    #ff2a85 0%,
+    #8b5cf6 25%,
+    #3b82f6 50%,
+    #06b6d4 75%,
+    #10b981 88%,
+    #f59e0b 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+/* Aura glowing effect */
+.aura-glow {
+  position: relative;
+}
+.aura-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 42, 133, 0.4),
+    rgba(139, 92, 246, 0.4),
+    rgba(6, 182, 212, 0.4),
+    rgba(245, 158, 11, 0.4)
+  );
+  border-radius: inherit;
+  filter: blur(12px);
+  z-index: -1;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.aura-glow:hover::before {
+  opacity: 1;
+}
+
+/* Glassmorphism cards */
+.glass-panel {
+  background: rgba(18, 20, 26, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(24, 27, 36, 0.85);
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.8), 0 0 20px -5px rgba(139, 92, 246, 0.15);
+}
+
+/* Subtle rainbow border */
+.rainbow-border {
+  position: relative;
+  background-clip: padding-box;
+  border: 1px solid transparent;
+}
+.rainbow-border::after {
+  content: '';
+  position: absolute;
+  top: -1px; bottom: -1px;
+  left: -1px; right: -1px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.5), rgba(99, 102, 241, 0.5), rgba(6, 182, 212, 0.5));
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #232733;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #343b4e;
+}
