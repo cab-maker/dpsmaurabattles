@@ -46,7 +46,6 @@ const securityHeaders = [
       img-src 'self' blob: data: https:;
       font-src 'self' data:;
       connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
-      frame-src 'self' https://meet.jit.si;
       frame-ancestors 'none';
       object-src 'none';
       base-uri 'self';
