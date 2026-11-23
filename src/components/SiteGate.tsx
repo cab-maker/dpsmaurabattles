@@ -6,7 +6,7 @@ import { Lock, ShieldAlert, CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck
 import { playUnlockSound, playDeniedSound } from '@/lib/sounds';
 
 export default function SiteGate({ children }: { children: React.ReactNode }) {
-  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -14,12 +14,10 @@ export default function SiteGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      // Check session unlock
       const sessionSaved = sessionStorage.getItem('aura_unlocked_session');
       if (sessionSaved && sessionSaved.toUpperCase() === 'AURA') {
         setIsUnlocked(true);
       } else {
-        // Clear any old permanent localStorage lock so seizure screen always shows fresh
         localStorage.removeItem('aura_unlocked');
         setIsUnlocked(false);
       }
@@ -54,15 +52,6 @@ export default function SiteGate({ children }: { children: React.ReactNode }) {
       setPasscode('');
     }
   };
-
-  // SSR loading state
-  if (isUnlocked === null) {
-    return (
-      <div className="fixed inset-0 bg-[#060b1e] flex items-center justify-center z-50">
-        <div className="w-8 h-8 rounded-full border-2 border-red-500/20 border-t-red-500 animate-spin" />
-      </div>
-    );
-  }
 
   // If unlocked, render normal website
   if (isUnlocked) {
