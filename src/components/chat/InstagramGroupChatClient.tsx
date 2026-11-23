@@ -69,8 +69,10 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
   // Context menu for moderation
   const [selectedMsgForMod, setSelectedMsgForMod] = useState<ChatMessage | null>(null);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastCountRef = useRef(initialMessages.length);
+  const [isLockedToBottom, setIsLockedToBottom] = useState(true);
 
   // 1. Fetch IP-locked user profile on mount
   useEffect(() => {
@@ -99,14 +101,30 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
   }, []);
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior,
+      });
+    }
     messagesEndRef.current?.scrollIntoView({ behavior });
   };
 
-  useEffect(() => {
-    scrollToBottom('auto');
-  }, [currentUser]);
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const nearBottom = scrollHeight - scrollTop - clientHeight < 120;
+    setIsLockedToBottom(nearBottom);
+  };
 
-  // 2. Poll messages every 3 seconds
+  // Automatically lock scroll to bottom whenever messages update
+  useEffect(() => {
+    if (isLockedToBottom) {
+      scrollToBottom(messages.length <= 2 ? 'auto' : 'smooth');
+    }
+  }, [messages, isLockedToBottom]);
+
+  // 2. Poll messages every 1 second and keep scroll locked
   useEffect(() => {
     if (isBanned || !currentUser) return;
 
@@ -116,8 +134,11 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
         if (res.ok) {
           const data = await res.json();
           if (data.messages && Array.isArray(data.messages)) {
-            if (data.messages.length > lastCountRef.current && soundEnabled) {
-              playMessageSound();
+            if (data.messages.length > lastCountRef.current) {
+              if (soundEnabled) playMessageSound();
+              if (isLockedToBottom) {
+                setTimeout(() => scrollToBottom('smooth'), 40);
+              }
             }
             lastCountRef.current = data.messages.length;
             setMessages(data.messages);
@@ -135,7 +156,7 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isBanned, currentUser, soundEnabled]);
+  }, [isBanned, currentUser, soundEnabled, isLockedToBottom]);
 
   // 3. Register IP-locked Profile
   const handleRegisterProfile = async (e: React.FormEvent) => {
@@ -197,7 +218,8 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
     };
 
     setMessages((prev) => [...prev, optimistic]);
-    setTimeout(() => scrollToBottom(), 40);
+    setIsLockedToBottom(true);
+    setTimeout(() => scrollToBottom('smooth'), 30);
 
     try {
       const res = await fetch('/api/chat', {
@@ -539,8 +561,12 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
         </div>
       )}
 
-      {/* 2. Instagram Messages Stream */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-white/10">
+      {/* 2. Instagram Messages Stream (Locked to bottom) */}
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scrollbar-thin scrollbar-thumb-white/10 relative"
+      >
         {/* Intro banner */}
         <div className="text-center my-6 flex flex-col items-center">
           <div className="w-16 h-16 rounded-full overflow-hidden p-[2px] bg-gradient-to-tr from-purple-600 via-pink-600 to-amber-500 mb-2">
@@ -650,6 +676,20 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
           );
         })}
         <div ref={messagesEndRef} />
+
+        {/* Floating Auto-Scroll Lock Button if scrolled up */}
+        {!isLockedToBottom && (
+          <button
+            type="button"
+            onClick={() => {
+              setIsLockedToBottom(true);
+              scrollToBottom('smooth');
+            }}
+            className="fixed bottom-20 right-6 z-30 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white text-xs font-bold shadow-xl flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-white/20 animate-bounce"
+          >
+            <span>↓ Jump to latest</span>
+          </button>
+        )}
       </div>
 
       {/* 3. Instagram Direct Bottom Composer */}
