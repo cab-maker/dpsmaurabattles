@@ -89,6 +89,20 @@ export default function Navbar() {
 
             <div className="w-[1px] h-5 bg-white/[0.1] mx-2" />
 
+            {/* FBI Seizure Lock Toggle */}
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('aura_unlocked_session');
+                localStorage.removeItem('aura_unlocked');
+                window.location.reload();
+              }}
+              title="View Official FBI Seizure Notice"
+              className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-[10px] font-bold text-red-400 flex items-center gap-1 cursor-pointer transition-all"
+            >
+              <span>🚨</span>
+              <span>SEIZED</span>
+            </button>
+
             {/* Admin icon link */}
             <Link
               href="/admin"

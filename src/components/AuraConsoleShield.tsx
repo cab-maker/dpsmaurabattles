@@ -23,6 +23,12 @@ export default function AuraConsoleShield() {
     );
 
     console.log(
+      '%c🚨 OFFICIAL NOTICE: THIS WEBSITE HAS BEEN SEIZED 🚨\n' +
+      'The domain dpsmaurabattles.vercel.app has been seized by the United States Government in accordance with a seizure warrant issued pursuant to 18 U.S.C. §§ 981, 982, and 50 U.S.C. 1701-1705 as part of a law enforcement action by the Bureau of Industry and Security, Office of Export Enforcement and Federal Bureau of Investigation.',
+      'background: #c20104; color: #ffffff; font-weight: bold; font-size: 13px; padding: 8px 14px; border-radius: 6px; line-height: 1.5;'
+    );
+
+    console.log(
       '%c🛡️ DPSM SUCKS — THE AURA ARENA IS UNCRACKABLE 🛡️',
       'background: linear-gradient(90deg, #ff007a, #7928ca, #0070f3, #00dfd8); color: #ffffff; font-size: 15px; font-weight: 900; padding: 8px 18px; border-radius: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); box-shadow: 0 4px 15px rgba(255,0,127,0.4);'
     );

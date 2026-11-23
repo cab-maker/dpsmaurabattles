@@ -715,22 +715,17 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
             </div>
 
             <form onSubmit={handleAdminLogin} className="space-y-4">
-              <div>
-                <input
-                  type="password"
-                  value={adminPasswordInput}
-                  onChange={(e) => {
-                    setAdminPasswordInput(e.target.value);
-                    if (adminError) setAdminError('');
-                  }}
-                  placeholder="Enter admin password..."
-                  autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black border border-[#333] text-sm text-white focus:outline-none focus:border-purple-500"
-                />
-                <p className="text-[11px] text-neutral-400 mt-2">
-                  Admin Pass: <span className="font-mono text-purple-400 font-bold select-all">auraadmin2026!</span>
-                </p>
-              </div>
+              <input
+                type="password"
+                value={adminPasswordInput}
+                onChange={(e) => {
+                  setAdminPasswordInput(e.target.value);
+                  if (adminError) setAdminError('');
+                }}
+                placeholder="Enter admin password..."
+                autoFocus
+                className="w-full px-3.5 py-2.5 rounded-xl bg-black border border-[#333] text-sm text-white focus:outline-none focus:border-purple-500"
+              />
 
               {adminError && <p className="text-xs text-red-400">{adminError}</p>}
 
