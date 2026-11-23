@@ -27,8 +27,28 @@ export default function Footer() {
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <Link href="/battles" className="hover:text-white transition-colors">Current Battles</Link>
             <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+            <Link href="/gc" className="hover:text-pink-400 transition-colors flex items-center gap-1">
+              <span>Chat</span>
+              <span className="text-[10px] px-1 py-0.2 bg-pink-500/20 text-pink-300 rounded font-bold">/gc</span>
+            </Link>
+            <Link href="/call" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
+              <span>Call</span>
+              <span className="text-[10px] px-1 py-0.2 bg-cyan-500/20 text-cyan-300 rounded font-bold">/call</span>
+            </Link>
             <Link href="/submit" className="hover:text-white transition-colors">Submit Battle</Link>
             <Link href="/admin" className="hover:text-purple-400 transition-colors">Admin Portal</Link>
+            <button
+              onClick={() => {
+                try {
+                  localStorage.removeItem('aura_unlocked');
+                  window.location.reload();
+                } catch {}
+              }}
+              className="text-xs text-red-400/80 hover:text-red-300 transition-colors flex items-center gap-1 cursor-pointer"
+              title="Lock website with FBI Seizure Notice"
+            >
+              🔒 Lock Site
+            </button>
           </div>
         </div>
 

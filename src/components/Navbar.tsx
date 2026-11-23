@@ -13,6 +13,8 @@ export default function Navbar() {
     { name: 'Arena Home', href: '/' },
     { name: 'Live Battles', href: '/battles' },
     { name: 'Leaderboard', href: '/leaderboard' },
+    { name: 'Chat', href: '/gc', badge: 'GC' },
+    { name: 'Call', href: '/call', badge: 'LIVE' },
     { name: 'Submit Battle', href: '/submit', isPrimary: true },
   ];
 
@@ -63,13 +65,24 @@ export default function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     active
                       ? 'text-white bg-white/[0.08]'
                       : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
                   }`}
                 >
-                  {item.name}
+                  <span>{item.name}</span>
+                  {item.badge && (
+                    <span
+                      className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase tracking-wider ${
+                        item.badge === 'LIVE'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-pink-500/20 text-pink-400 border border-pink-500/30'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -119,15 +132,20 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                   item.isPrimary
-                    ? 'text-white bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-center'
+                    ? 'text-white bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-center justify-center'
                     : active
                     ? 'text-white bg-white/[0.08]'
                     : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
-                {item.name}
+                <span>{item.name}</span>
+                {item.badge && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-400 font-extrabold uppercase">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}

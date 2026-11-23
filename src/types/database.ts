@@ -65,3 +65,13 @@ export interface AdminStats {
   totalStudents: number;
   totalWins: number;
 }
+
+export interface ChatMessage {
+  id: string;
+  sender_name: string;
+  sender_badge: string;
+  message: string;
+  reactions: Record<string, number>;
+  is_pinned: boolean;
+  created_at: string;
+}

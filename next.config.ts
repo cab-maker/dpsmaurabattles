@@ -23,7 +23,7 @@ const securityHeaders = [
   },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+    value: "camera=(self), microphone=(self), display-capture=(self), geolocation=(), browsing-topics=()",
   },
   {
     key: "X-XSS-Protection",
@@ -46,6 +46,7 @@ const securityHeaders = [
       img-src 'self' blob: data: https:;
       font-src 'self' data:;
       connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
+      frame-src 'self' https://meet.jit.si;
       frame-ancestors 'none';
       object-src 'none';
       base-uri 'self';
