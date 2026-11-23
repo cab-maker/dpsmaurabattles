@@ -102,25 +102,30 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        top: scrollContainerRef.current.scrollHeight,
-        behavior,
-      });
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
-    messagesEndRef.current?.scrollIntoView({ behavior });
+    messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });
   };
 
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-    const nearBottom = scrollHeight - scrollTop - clientHeight < 120;
+    const nearBottom = scrollHeight - scrollTop - clientHeight < 150;
     setIsLockedToBottom(nearBottom);
   };
 
-  // Automatically lock scroll to bottom whenever messages update
+  // Automatically lock scroll to bottom on mount and whenever messages update
+  useEffect(() => {
+    scrollToBottom('auto');
+    const timer = setTimeout(() => scrollToBottom('auto'), 150);
+    return () => clearTimeout(timer);
+  }, [currentUser]);
+
   useEffect(() => {
     if (isLockedToBottom) {
-      scrollToBottom(messages.length <= 2 ? 'auto' : 'smooth');
+      scrollToBottom('smooth');
+      const timer = setTimeout(() => scrollToBottom('smooth'), 80);
+      return () => clearTimeout(timer);
     }
   }, [messages, isLockedToBottom]);
 
@@ -473,7 +478,7 @@ export default function InstagramGroupChatClient({ initialMessages }: { initialM
 
   // --- RENDER MAIN INSTAGRAM GROUP CHAT UI ---
   return (
-    <div className="w-full h-[calc(100vh-4rem)] flex flex-col bg-[#000000] overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-[#000000] overflow-hidden">
       {/* 1. Instagram Direct Header */}
       <div className="h-16 px-4 sm:px-8 border-b border-[#262626] flex items-center justify-between shrink-0 bg-[#000000]/95 backdrop-blur-md z-10 w-full">
         <div className="flex items-center gap-3">

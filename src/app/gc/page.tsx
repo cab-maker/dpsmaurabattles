@@ -29,7 +29,7 @@ export default async function GroupChatPage() {
   const initialMessages = await getInitialMessages();
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[#000000]">
+    <div className="fixed inset-x-0 top-16 bottom-0 flex flex-col bg-[#000000] overflow-hidden z-20">
       <InstagramGroupChatClient initialMessages={initialMessages} />
     </div>
   );
