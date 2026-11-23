@@ -1,12 +1,20 @@
-import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createSessionToken, verifySessionToken, SESSION_COOKIE_NAME } from '@/lib/auth';
+import { validateMutationRequest, createSecureResponse } from '@/lib/security';
 
 // Rate limiting in-memory map for basic brute-force protection
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 
 export async function POST(request: Request) {
   try {
+    const originCheck = validateMutationRequest(request);
+    if (!originCheck.valid) {
+      return createSecureResponse(
+        { error: originCheck.reason || 'Forbidden: DPSM SUCKS' },
+        { status: 403 }
+      );
+    }
+
     const ip = request.headers.get('x-forwarded-for') || 'local';
     const now = Date.now();
     const rateLimit = loginAttempts.get(ip) || { count: 0, resetAt: now + 60000 };
@@ -17,7 +25,7 @@ export async function POST(request: Request) {
     }
 
     if (rateLimit.count >= 5) {
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Too many attempts. Please try again in 1 minute.' },
         { status: 429 }
       );
@@ -29,7 +37,7 @@ export async function POST(request: Request) {
     if (!password || password !== expectedPassword) {
       rateLimit.count += 1;
       loginAttempts.set(ip, rateLimit);
-      return NextResponse.json(
+      return createSecureResponse(
         { error: 'Invalid admin credentials' },
         { status: 401 }
       );
@@ -49,9 +57,9 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    return NextResponse.json({ success: true, message: 'Logged in successfully' });
+    return createSecureResponse({ success: true, message: 'Logged in successfully' });
   } catch {
-    return NextResponse.json(
+    return createSecureResponse(
       { error: 'An unexpected authentication error occurred.' },
       { status: 500 }
     );
@@ -64,9 +72,9 @@ export async function GET() {
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
     const isValid = verifySessionToken(token);
 
-    return NextResponse.json({ authenticated: isValid });
+    return createSecureResponse({ authenticated: isValid });
   } catch {
-    return NextResponse.json({ authenticated: false });
+    return createSecureResponse({ authenticated: false });
   }
 }
 
@@ -74,8 +82,8 @@ export async function DELETE() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete(SESSION_COOKIE_NAME);
-    return NextResponse.json({ success: true, message: 'Logged out successfully' });
+    return createSecureResponse({ success: true, message: 'Logged out successfully' });
   } catch {
-    return NextResponse.json({ error: 'Failed to logout' }, { status: 500 });
+    return createSecureResponse({ error: 'Failed to logout' }, { status: 500 });
   }
 }
