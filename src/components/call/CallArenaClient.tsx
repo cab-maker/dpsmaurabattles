@@ -78,58 +78,14 @@ export default function CallArenaClient() {
   const [audioLevel, setAudioLevel] = useState(0);
 
   // In-call messages
-  const [inCallMessages, setInCallMessages] = useState<InCallMessage[]>([
-    { id: '1', sender: 'Purab', text: 'Yo Friday battle is gonna be insane 🔥', time: '10:02' },
-    { id: '2', sender: 'Utkarsh', text: 'Who is ready for the Mog Battle?? 💀', time: '10:04' },
-  ]);
+  const [inCallMessages, setInCallMessages] = useState<InCallMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
 
   // Floating reactions
   const [floatingReactions, setFloatingReactions] = useState<{ id: number; emoji: string; left: number }[]>([]);
 
-  // Peers in room
-  const [peers, setPeers] = useState<Peer[]>([
-    {
-      id: 'p1',
-      name: 'Purab (Host)',
-      badge: '👑 Mogger',
-      pfp: 'https://api.dicebear.com/7.x/bottts/svg?seed=Purab99',
-      isSpeaking: true,
-      isMuted: false,
-      hasCamera: false,
-      raisedHand: false,
-    },
-    {
-      id: 'p2',
-      name: 'Utkarsh',
-      badge: '⚡ Aura King',
-      pfp: 'https://api.dicebear.com/7.x/bottts/svg?seed=Utkarsh',
-      isSpeaking: false,
-      isMuted: true,
-      hasCamera: false,
-      raisedHand: false,
-    },
-    {
-      id: 'p3',
-      name: 'Rishaan',
-      badge: '🗿 Gigachad',
-      pfp: 'https://api.dicebear.com/7.x/bottts/svg?seed=Rishaan',
-      isSpeaking: false,
-      isMuted: false,
-      hasCamera: false,
-      raisedHand: true,
-    },
-    {
-      id: 'p4',
-      name: 'Aahan',
-      badge: '🔥 Challenger',
-      pfp: 'https://api.dicebear.com/7.x/bottts/svg?seed=Aahan',
-      isSpeaking: false,
-      isMuted: false,
-      hasCamera: false,
-      raisedHand: false,
-    },
-  ]);
+  // Peers in room (starts empty, only real connected participants)
+  const [peers, setPeers] = useState<Peer[]>([]);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -361,23 +317,6 @@ export default function CallArenaClient() {
     }
   };
 
-  // Randomized speaking activity for peers
-  useEffect(() => {
-    if (!inCall) return;
-    const interval = setInterval(() => {
-      setPeers((prev) =>
-        prev.map((p) => {
-          if (p.isMuted) return p;
-          return {
-            ...p,
-            isSpeaking: Math.random() > 0.65,
-          };
-        })
-      );
-    }, 2500);
-    return () => clearInterval(interval);
-  }, [inCall]);
-
   const formatTimer = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -446,18 +385,18 @@ export default function CallArenaClient() {
             {/* Room Live Indicator */}
             <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse" />
                 <div>
                   <span className="text-xs font-bold text-white block">
-                    {peers.length} Students Currently in Room
+                    {roomName} • Ready to Connect
                   </span>
                   <span className="text-[11px] text-neutral-400">
-                    Purab (Host), Utkarsh, Rishaan, Aahan
+                    Host room or join with your microphone &amp; webcam
                   </span>
                 </div>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider">
-                LIVE
+              <span className="px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider">
+                READY
               </span>
             </div>
 
@@ -655,6 +594,26 @@ export default function CallArenaClient() {
                 </div>
               </div>
             </div>
+
+            {/* Waiting for Others Tile when alone */}
+            {peers.length === 0 && (
+              <div className="relative rounded-3xl overflow-hidden bg-[#0a0d17]/80 border border-dashed border-white/15 aspect-video flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mb-3">
+                  <Users className="w-7 h-7 text-neutral-400" />
+                </div>
+                <h4 className="text-sm font-bold text-white mb-1">Stage is Live</h4>
+                <p className="text-xs text-neutral-400 mb-4 max-w-xs">
+                  You are the first participant on stage. Share the room invite link with classmates to begin.
+                </p>
+                <button
+                  onClick={copyInviteLink}
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-xs font-bold text-white flex items-center gap-2 transition-all cursor-pointer shadow-md"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Link Copied' : 'Share Room Invite'}</span>
+                </button>
+              </div>
+            )}
 
             {/* Other Students (Peers) */}
             {peers.map((peer) => (
