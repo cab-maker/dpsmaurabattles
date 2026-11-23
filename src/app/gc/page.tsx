@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import { ChatMessage } from '@/types/database';
-import GroupChatClient from '@/components/chat/GroupChatClient';
+import InstagramGroupChatClient from '@/components/chat/InstagramGroupChatClient';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -29,8 +29,8 @@ export default async function GroupChatPage() {
   const initialMessages = await getInitialMessages();
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-[#060709] via-[#090b12] to-[#060709]">
-      <GroupChatClient initialMessages={initialMessages} />
+    <div className="min-h-[calc(100vh-4rem)] bg-[#000000]">
+      <InstagramGroupChatClient initialMessages={initialMessages} />
     </div>
   );
 }

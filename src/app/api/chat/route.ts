@@ -1,8 +1,41 @@
 import { supabase } from '@/lib/supabase';
 import { validateMutationRequest, sanitizeInput, createSecureResponse } from '@/lib/security';
 
-export async function GET() {
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp.trim();
+  return '127.0.0.1';
+}
+
+export async function GET(request: Request) {
   try {
+    const ip = getClientIp(request);
+
+    // Check if requester IP is banned
+    const { data: userProfile } = await supabase
+      .from('chat_users')
+      .select('is_banned, ban_reason')
+      .eq('ip', ip)
+      .maybeSingle();
+
+    if (userProfile?.is_banned) {
+      return createSecureResponse(
+        {
+          error: 'Your IP has been banned from the GC for Aura violations.',
+          is_banned: true,
+          ban_reason: userProfile.ban_reason || 'Banned by Admin',
+          messages: [],
+        },
+        { status: 403 }
+      );
+    }
+
     const { data, error } = await supabase
       .from('chat_messages')
       .select('*')
@@ -32,7 +65,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const ip = request.headers.get('x-forwarded-for') || 'local';
+    const ip = getClientIp(request);
+
+    // 1. Verify user profile exists and is NOT banned
+    const { data: userProfile } = await supabase
+      .from('chat_users')
+      .select('*')
+      .eq('ip', ip)
+      .maybeSingle();
+
+    if (!userProfile) {
+      return createSecureResponse(
+        { error: 'Profile required. Please enter your name and choose a profile picture first.' },
+        { status: 401 }
+      );
+    }
+
+    if (userProfile.is_banned) {
+      return createSecureResponse(
+        {
+          error: 'Your IP has been banned from the GC for Aura violations.',
+          is_banned: true,
+        },
+        { status: 403 }
+      );
+    }
+
+    // 2. Anti-spam throttle (800ms)
     const now = Date.now();
     const lastSent = spamMap.get(ip) || 0;
 
@@ -44,7 +103,6 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const sender_name = sanitizeInput(body.sender_name) || 'Anonymous Mogger';
     const sender_badge = sanitizeInput(body.sender_badge) || 'Challenger';
     const message = sanitizeInput(body.message);
 
@@ -52,8 +110,8 @@ export async function POST(request: Request) {
       return createSecureResponse({ error: 'Message cannot be empty.' }, { status: 400 });
     }
 
-    if (message.length > 400) {
-      return createSecureResponse({ error: 'Message must be under 400 characters.' }, { status: 400 });
+    if (message.length > 500) {
+      return createSecureResponse({ error: 'Message must be under 500 characters.' }, { status: 400 });
     }
 
     spamMap.set(ip, now);
@@ -61,9 +119,11 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from('chat_messages')
       .insert({
-        sender_name: sender_name.slice(0, 30),
+        sender_name: userProfile.name,
+        sender_pfp: userProfile.pfp_url,
+        sender_ip: ip,
         sender_badge: sender_badge.slice(0, 30),
-        message: message.slice(0, 400),
+        message: message.slice(0, 500),
         reactions: {},
       })
       .select()

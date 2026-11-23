@@ -70,8 +70,19 @@ export interface ChatMessage {
   id: string;
   sender_name: string;
   sender_badge: string;
+  sender_pfp?: string | null;
+  sender_ip?: string | null;
   message: string;
   reactions: Record<string, number>;
   is_pinned: boolean;
+  created_at: string;
+}
+
+export interface ChatUser {
+  ip: string;
+  name: string;
+  pfp_url: string;
+  is_banned: boolean;
+  ban_reason?: string | null;
   created_at: string;
 }
