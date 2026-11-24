@@ -1,8 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Trophy, Medal, Crown, Flame, Swords, ArrowRight } from 'lucide-react';
+import { Trophy, Medal, Crown, ArrowRight } from 'lucide-react';
 import { getLeaderboard, getCompletedBattleHistory } from '@/lib/db';
-
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -17,82 +16,82 @@ export default async function LeaderboardPage() {
   const remaining = leaderboard.slice(3);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-20 bg-[#000000] text-white">
       
       {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <span className="text-xs uppercase font-extrabold tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
-          Hall of Legends
+      <div className="mb-16 pb-8 border-b border-neutral-900">
+        <span className="text-xs font-black uppercase tracking-widest text-[#ec008c] block mb-2">
+          Rankings & Standings
         </span>
-        <h1 className="text-3xl sm:text-5xl font-black text-white">
-          The Official <span className="aura-text">Aura</span> Leaderboard
+        <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tighter">
+          Leaderboard.
         </h1>
-        <p className="text-sm text-neutral-400 mt-3 leading-relaxed">
+        <p className="text-sm sm:text-base text-neutral-400 mt-3 max-w-xl font-medium">
           Sanctioned win standings maintained automatically by battle outcomes. Who holds supreme school aura?
         </p>
       </div>
 
       {/* Top 3 Podium Highlights */}
       {topThree.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20 items-end">
           
-          {/* 2nd Place - Silver (order-2 on mobile, left on desktop) */}
+          {/* 2nd Place */}
           {topThree[1] && (
-            <div className="order-2 md:order-1 glass-panel rounded-3xl p-6 sm:p-8 border border-slate-300/30 bg-gradient-to-t from-slate-400/10 via-transparent to-transparent text-center relative overflow-hidden group">
-              <div className="w-16 h-16 rounded-2xl bg-slate-300/10 border border-slate-300/30 flex items-center justify-center mx-auto mb-4 text-slate-300">
-                <Medal className="w-8 h-8" />
+            <div className="order-2 md:order-1 rounded-2xl p-7 bg-[#0a0a0a] border border-neutral-800 text-center relative overflow-hidden group">
+              <div className="w-14 h-14 rounded-2xl bg-neutral-900 border border-neutral-700 flex items-center justify-center mx-auto mb-4 text-neutral-300">
+                <Medal className="w-7 h-7" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-slate-400 px-2.5 py-1 rounded-full bg-slate-400/10 border border-slate-400/20">
-                2nd Place — Silver
+              <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800">
+                #2 • Silver
               </span>
-              <h3 className="text-2xl font-black text-white mt-4">{topThree[1].student_name}</h3>
-              <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <span className="text-3xl font-black text-slate-200">{topThree[1].total_wins}</span>
-                <span className="block text-xs uppercase font-bold text-neutral-400 mt-0.5">Sanctioned Wins</span>
+              <h3 className="text-2xl font-black text-white mt-4 tracking-tight">{topThree[1].student_name}</h3>
+              <div className="mt-5 pt-4 border-t border-neutral-900">
+                <span className="text-3xl font-black text-neutral-200">{topThree[1].total_wins}</span>
+                <span className="block text-[10px] uppercase font-black text-neutral-500 mt-0.5">Wins</span>
               </div>
             </div>
           )}
 
-          {/* 1st Place - Gold (order-1 on mobile, center on desktop) */}
+          {/* 1st Place */}
           {topThree[0] && (
-            <div className="order-1 md:order-2 glass-panel rounded-3xl p-8 sm:p-10 border border-amber-400/40 bg-gradient-to-t from-amber-500/15 via-transparent to-transparent text-center relative overflow-hidden shadow-2xl shadow-amber-500/10 group scale-100 md:scale-105 z-10">
-              <div className="w-20 h-20 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center mx-auto mb-4 text-amber-400">
-                <Crown className="w-10 h-10 animate-bounce" />
+            <div className="order-1 md:order-2 rounded-2xl p-8 sm:p-10 bg-[#0d0d0d] border-2 border-[#ec008c]/60 text-center relative overflow-hidden shadow-2xl shadow-[#ec008c]/10 scale-100 md:scale-105 z-10">
+              <div className="w-16 h-16 rounded-2xl bg-[#ec008c]/20 border border-[#ec008c]/40 flex items-center justify-center mx-auto mb-4 text-[#ec008c]">
+                <Crown className="w-8 h-8 animate-bounce" />
               </div>
-              <span className="text-xs font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30">
-                ★ 1st Place — Gold King ★
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#ec008c] px-3.5 py-1 rounded-full bg-[#ec008c]/15 border border-[#ec008c]/30">
+                ★ #1 • Supreme Champion ★
               </span>
-              <h3 className="text-3xl font-black text-white mt-4">{topThree[0].student_name}</h3>
-              <div className="mt-5 pt-5 border-t border-white/[0.08]">
-                <span className="text-4xl font-black aura-text">{topThree[0].total_wins}</span>
-                <span className="block text-xs uppercase font-extrabold text-neutral-300 mt-1">Undefeated Wins</span>
+              <h3 className="text-3xl font-black text-white mt-4 tracking-tight">{topThree[0].student_name}</h3>
+              <div className="mt-5 pt-5 border-t border-neutral-900">
+                <span className="text-4xl font-black text-[#ec008c]">{topThree[0].total_wins}</span>
+                <span className="block text-[10px] uppercase font-black text-neutral-400 mt-1">Undefeated Wins</span>
               </div>
             </div>
           )}
 
-          {/* 3rd Place - Bronze (order-3) */}
+          {/* 3rd Place */}
           {topThree[2] && (
-            <div className="order-3 glass-panel rounded-3xl p-6 sm:p-8 border border-amber-700/30 bg-gradient-to-t from-amber-800/10 via-transparent to-transparent text-center relative overflow-hidden group">
-              <div className="w-16 h-16 rounded-2xl bg-amber-700/10 border border-amber-700/30 flex items-center justify-center mx-auto mb-4 text-amber-500">
-                <Medal className="w-8 h-8" />
+            <div className="order-3 rounded-2xl p-7 bg-[#0a0a0a] border border-neutral-800 text-center relative overflow-hidden group">
+              <div className="w-14 h-14 rounded-2xl bg-neutral-900 border border-neutral-700 flex items-center justify-center mx-auto mb-4 text-amber-600">
+                <Medal className="w-7 h-7" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-amber-600 px-2.5 py-1 rounded-full bg-amber-700/10 border border-amber-700/20">
-                3rd Place — Bronze
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800">
+                #3 • Bronze
               </span>
-              <h3 className="text-2xl font-black text-white mt-4">{topThree[2].student_name}</h3>
-              <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <span className="text-3xl font-black text-amber-500">{topThree[2].total_wins}</span>
-                <span className="block text-xs uppercase font-bold text-neutral-400 mt-0.5">Sanctioned Wins</span>
+              <h3 className="text-2xl font-black text-white mt-4 tracking-tight">{topThree[2].student_name}</h3>
+              <div className="mt-5 pt-4 border-t border-neutral-900">
+                <span className="text-3xl font-black text-neutral-300">{topThree[2].total_wins}</span>
+                <span className="block text-[10px] uppercase font-black text-neutral-500 mt-0.5">Wins</span>
               </div>
             </div>
           )}
 
         </div>
       ) : (
-        <div className="glass-panel rounded-3xl p-12 text-center max-w-md mx-auto mb-16">
-          <Trophy className="w-10 h-10 text-neutral-400 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-white mb-1">Leaderboard is Fresh</h3>
-          <p className="text-xs text-neutral-400">
+        <div className="rounded-2xl p-16 text-center max-w-md mx-auto mb-20 bg-[#0a0a0a] border border-neutral-900">
+          <Trophy className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
+          <h3 className="text-lg font-black text-white mb-1">Leaderboard is Fresh</h3>
+          <p className="text-xs text-neutral-500">
             No battle results recorded yet. Completed arena matches will automatically rank participants here.
           </p>
         </div>
@@ -100,29 +99,29 @@ export default async function LeaderboardPage() {
 
       {/* Full Leaderboard Table */}
       {remaining.length > 0 && (
-        <div className="glass-panel rounded-2xl overflow-hidden border border-white/[0.08] mb-16">
-          <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.02]">
-            <h3 className="text-base font-bold text-white">Full Contender Rankings</h3>
+        <div className="rounded-2xl overflow-hidden border border-neutral-900 bg-[#0a0a0a] mb-20">
+          <div className="px-6 py-4 border-b border-neutral-900 bg-neutral-950">
+            <h3 className="text-sm font-black text-white uppercase tracking-wider">All Contender Rankings</h3>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-neutral-900">
             {remaining.map((student, idx) => (
               <div
                 key={student.id}
-                className="px-6 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                className="px-6 py-4 flex items-center justify-between hover:bg-neutral-900/40 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-black text-neutral-400 w-8">
+                  <span className="text-xs font-mono font-bold text-neutral-500 w-8">
                     #{idx + 4}
                   </span>
-                  <span className="text-base font-bold text-white">
+                  <span className="text-base font-black text-white tracking-tight">
                     {student.student_name}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-black text-neutral-200">
+                  <span className="text-lg font-black text-[#ec008c]">
                     {student.total_wins}
                   </span>
-                  <span className="text-xs uppercase font-semibold text-neutral-400">
+                  <span className="text-[10px] uppercase font-black text-neutral-500">
                     wins
                   </span>
                 </div>
@@ -133,20 +132,22 @@ export default async function LeaderboardPage() {
       )}
 
       {/* Battle Results & History Log */}
-      <div className="mt-12">
-        <div className="flex items-center justify-between mb-6">
+      <div>
+        <div className="flex items-end justify-between mb-8 pb-4 border-b border-neutral-900">
           <div>
-            <span className="text-xs uppercase font-extrabold tracking-widest text-neutral-400">Archive</span>
-            <h2 className="text-2xl font-black text-white">
-              Recent Battle History & Winners
+            <span className="text-xs font-black uppercase tracking-widest text-[#ec008c] block mb-1">
+              Archive
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Recent Matches.
             </h2>
           </div>
           <Link
             href="/battles"
-            className="text-xs sm:text-sm font-semibold text-purple-400 hover:text-purple-300 flex items-center gap-1"
+            className="text-xs font-bold text-neutral-400 hover:text-white flex items-center gap-1 group"
           >
             <span>All Matches</span>
-            <ArrowRight className="w-4 h-4" />
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
 
@@ -155,24 +156,24 @@ export default async function LeaderboardPage() {
             {history.map((h) => (
               <div
                 key={h.id}
-                className="glass-panel rounded-2xl p-5 border border-white/[0.06] flex items-center justify-between gap-4"
+                className="rounded-2xl p-5 bg-[#0a0a0a] border border-neutral-900 hover:border-neutral-800 transition-all flex items-center justify-between gap-4"
               >
                 <div>
-                  <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
-                    <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-neutral-300 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-neutral-500 mb-1 font-medium">
+                    <span className="px-2 py-0.5 rounded-full bg-neutral-900 text-neutral-400 text-[10px] font-bold">
                       {h.category}
                     </span>
                     <span>•</span>
-                    <span>{h.location?.name || 'School Campus'}</span>
+                    <span>{h.location?.name || 'Campus'}</span>
                   </div>
-                  <p className="text-sm font-bold text-white">
-                    {h.person_one} <span className="text-neutral-400 font-normal">vs</span> {h.person_two}
+                  <p className="text-sm font-black text-white tracking-tight">
+                    {h.person_one} <span className="text-neutral-500 font-normal">vs</span> {h.person_two}
                   </p>
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs font-bold">
-                    <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-bold text-[#ec008c]">
+                    <Trophy className="w-3.5 h-3.5 text-[#ec008c]" />
                     <span>{h.winner_name}</span>
                   </span>
                 </div>
@@ -180,7 +181,7 @@ export default async function LeaderboardPage() {
             ))}
           </div>
         ) : (
-          <div className="glass-panel rounded-2xl p-6 text-center text-xs text-neutral-400">
+          <div className="rounded-2xl p-8 bg-[#0a0a0a] border border-neutral-900 text-center text-xs text-neutral-500">
             No completed matches in history yet.
           </div>
         )}

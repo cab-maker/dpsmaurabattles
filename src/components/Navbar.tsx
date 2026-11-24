@@ -3,19 +3,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Swords, Trophy, PlusCircle, ShieldCheck, Menu, X, Flame } from 'lucide-react';
+import { Menu, X, ShieldCheck, Flame, Swords } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: 'Arena Home', href: '/' },
-    { name: 'Live Battles', href: '/battles' },
+    { name: 'Battles', href: '/battles' },
     { name: 'Leaderboard', href: '/leaderboard' },
-    { name: 'Chat', href: '/gc', badge: 'GC' },
-    { name: 'Call', href: '/call', badge: 'LIVE' },
-    { name: 'Submit Battle', href: '/submit', isPrimary: true },
+    { name: 'Group Chat', href: '/gc', badge: 'GC' },
+    { name: 'Call Arena', href: '/call', badge: 'LIVE' },
   ];
 
   const isActive = (href: string) => {
@@ -24,60 +22,41 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-[#08090d]/90 backdrop-blur-md border-b border-white/[0.08]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 w-full bg-[#000000]/90 backdrop-blur-md border-b border-neutral-900 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           
-          {/* Logo & School Branding */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-cyan-400 p-[1px] flex items-center justify-center shadow-sm">
-              <div className="w-full h-full bg-[#0a0c12] rounded-[11px] flex items-center justify-center">
-                <Flame className="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-lg tracking-tight leading-none text-white">
-                <span className="text-white">DPSM</span> <span className="aura-text">Aura</span> Battles
-              </span>
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-400 mt-0.5">
-                Official School Championship
-              </span>
-            </div>
+          {/* Left Brand: Huge-inspired Aura Battles Wordmark */}
+          <Link href="/" className="flex items-center gap-1.5 group select-none">
+            <span className="text-2xl sm:text-3xl font-black tracking-tighter text-[#ec008c] group-hover:opacity-90 transition-opacity">
+              Aura
+            </span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
+              Battles.
+            </span>
           </Link>
 
-          {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center gap-1.5">
+          {/* Desktop Nav Items (Huge Inc style: clean, spaced, muted links) */}
+          <nav className="hidden md:flex items-center gap-7">
             {navItems.map((item) => {
               const active = isActive(item.href);
-              if (item.isPrimary) {
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="ml-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 hover:opacity-90 shadow-sm active:scale-95 transition-all"
-                  >
-                    <PlusCircle className="w-3.5 h-3.5" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              }
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`text-xs font-semibold tracking-tight transition-colors duration-150 flex items-center gap-1.5 ${
                     active
-                      ? 'text-white bg-white/[0.08]'
-                      : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+                      ? 'text-white'
+                      : 'text-neutral-400 hover:text-white'
                   }`}
                 >
                   <span>{item.name}</span>
                   {item.badge && (
                     <span
-                      className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase tracking-wider ${
+                      className={`text-[9px] px-1.5 py-0.5 rounded font-black tracking-wider uppercase ${
                         item.badge === 'LIVE'
-                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                          : 'bg-pink-500/20 text-pink-400 border border-pink-500/30'
+                          ? 'bg-[#ec008c]/20 text-[#ec008c] border border-[#ec008c]/30'
+                          : 'bg-white/10 text-neutral-300'
                       }`}
                     >
                       {item.badge}
@@ -86,50 +65,58 @@ export default function Navbar() {
                 </Link>
               );
             })}
+          </nav>
 
-            <div className="w-[1px] h-5 bg-white/[0.1] mx-2" />
-
-            {/* FBI Seizure Lock Toggle */}
+          {/* Right Action: Huge Inc Signature White Pill Button & Quick Access */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Seizure Notice Toggle */}
             <button
               onClick={() => {
                 sessionStorage.removeItem('aura_unlocked_session');
                 localStorage.removeItem('aura_unlocked');
                 window.location.reload();
               }}
-              title="View Official FBI Seizure Notice"
-              className="px-2.5 py-1 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-[10px] font-bold text-red-400 flex items-center gap-1 cursor-pointer transition-all"
+              title="Test Official FBI Seizure Notice"
+              className="px-2.5 py-1 rounded-full bg-red-950/60 hover:bg-red-900/80 border border-red-700/50 text-[10px] font-mono font-bold text-red-300 flex items-center gap-1 cursor-pointer transition-all active:scale-95"
             >
-              <span>🚨</span>
-              <span>SEIZED</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+              <span>SEIZED NOTICE</span>
             </button>
 
-            {/* Admin icon link */}
+            {/* Admin Portal Icon */}
             <Link
               href="/admin"
               title="Admin Portal"
-              className={`p-2 rounded-lg text-neutral-400 hover:text-purple-300 hover:bg-white/[0.04] transition-all ${
-                pathname.startsWith('/admin') ? 'text-purple-400 bg-purple-500/10' : ''
+              className={`p-2 rounded-full text-neutral-500 hover:text-white hover:bg-neutral-900 transition-all ${
+                pathname.startsWith('/admin') ? 'text-[#ec008c] bg-neutral-900' : ''
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
             </Link>
+
+            {/* Signature White Pill "Let's Battle" CTA Button */}
+            <Link
+              href="/submit"
+              className="rounded-full bg-white text-black px-5 py-2 text-xs font-black tracking-tight hover:bg-neutral-200 active:scale-95 transition-all shadow-[0_2px_10px_rgba(255,255,255,0.2)]"
+            >
+              Let&apos;s battle
+            </Link>
           </div>
 
-          {/* Mobile hamburger menu */}
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
             <Link
-              href="/admin"
-              className="p-2 text-neutral-400 hover:text-white"
-              title="Admin"
+              href="/submit"
+              className="rounded-full bg-white text-black px-3 py-1.5 text-xs font-black"
             >
-              <ShieldCheck className="w-4 h-4" />
+              Battle
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.06] focus:outline-none"
+              className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-900 focus:outline-none"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
@@ -138,7 +125,7 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#090b10] px-4 pt-3 pb-5 space-y-2">
+        <div className="md:hidden border-b border-neutral-900 bg-[#000000] px-6 pt-4 pb-6 space-y-3">
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -146,33 +133,41 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  item.isPrimary
-                    ? 'text-white bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 text-center justify-center'
-                    : active
-                    ? 'text-white bg-white/[0.08]'
-                    : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+                className={`flex items-center justify-between py-2 text-sm font-semibold tracking-tight ${
+                  active ? 'text-white' : 'text-neutral-400'
                 }`}
               >
                 <span>{item.name}</span>
                 {item.badge && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-400 font-extrabold uppercase">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#ec008c]/20 text-[#ec008c] font-black">
                     {item.badge}
                   </span>
                 )}
               </Link>
             );
           })}
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-neutral-400 hover:text-purple-300 bg-white/[0.02] text-xs font-semibold"
-          >
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
-            <span>Admin Management Panel</span>
-          </Link>
+
+          <div className="pt-4 border-t border-neutral-900 flex items-center justify-between">
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('aura_unlocked_session');
+                localStorage.removeItem('aura_unlocked');
+                window.location.reload();
+              }}
+              className="text-xs font-mono text-red-400 font-bold"
+            >
+              🚨 Re-lock with Seizure Notice
+            </button>
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs text-neutral-400 hover:text-white"
+            >
+              Admin
+            </Link>
+          </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
