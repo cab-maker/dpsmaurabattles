@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Battle, Announcement, LeaderboardEntry, Location } from '@/types/database';
+import { Battle, Announcement, LeaderboardEntry, Location, Meme } from '@/types/database';
 
 
 export async function getPublicAnnouncements(): Promise<Announcement[]> {
@@ -78,3 +78,18 @@ export async function getCompletedBattleHistory(): Promise<Battle[]> {
   }
   return (data as Battle[]) || [];
 }
+
+export async function getPublicMemes(): Promise<Meme[]> {
+  const { data, error } = await supabase
+    .from('memes')
+    .select('*')
+    .order('is_pinned', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching memes:', error);
+    return [];
+  }
+  return data || [];
+}
+

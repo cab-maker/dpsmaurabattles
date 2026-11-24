@@ -3,15 +3,13 @@
 import React from 'react';
 
 const TICKER_ITEMS = [
+  '🚨 AURA BATTLES CORP DIRECTIVE: HYPERGAMY IS BAD • EQUAL RESPECT FOR ALL CONTENDERS',
+  '👑 DPSM OFFICIAL ARENA SHOWDOWNS • SANCTIONED MATCHES ONLY',
   '⚡ +1,000,000 AURA: Walking into class during the final bell chime',
-  '💀 -500,000 AURA: Waved at someone who was waving at the person behind you',
-  '👑 +999,999 AURA: Getting nominated for the official DPSM Aura Battle',
-  '🗿 +500,000 AURA: Maintaining unbroken eye contact with the principal',
-  '😭 -1,000,000 AURA: Calling the teacher "Mom" during morning attendance',
-  '🤫 +750,000 AURA: Perfect jawline mewing angle in school ID photo',
-  '🔥 +100,000 AURA: Catching the water bottle before it hits the floor',
-  '📭 -200,000 AURA: Left on delivered for 72 hours',
-  '🏆 +5,000,000 AURA: Uncontested Mog Battle champion on the official leaderboard',
+  '🚫 NO SKEWED CONCENTRATION VECTORS • AUTHENTIC CHARISMA & ENERGY ONLY',
+  '🏆 UNCONTESTED MOG BATTLE CHAMPIONS ON THE OFFICIAL LEADERBOARD',
+  '🗿 +500,000 AURA: Maintaining unbroken eye contact with the vice principal',
+  '🔥 PEAK ARENA CLASHES: VOLUNTARY, RESPECTFUL, AND HIGH VIBE',
 ];
 
 export default function AuraTicker() {

@@ -2,20 +2,20 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles } from 'lucide-react';
-import { getPublicAnnouncements, getApprovedBattles, getLeaderboard } from '@/lib/db';
-import AnnouncementBanner from '@/components/AnnouncementBanner';
+import { getPublicAnnouncements, getApprovedBattles, getLeaderboard, getPublicMemes } from '@/lib/db';
+import AnnouncementPopup from '@/components/AnnouncementPopup';
 import AuraTicker from '@/components/AuraTicker';
-import AuraCalculator from '@/components/AuraCalculator';
-import AuraMemeVault from '@/components/AuraMemeVault';
+import MemesCarouselSection from '@/components/MemesCarouselSection';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function HomePage() {
-  const [announcements, battles, leaderboard] = await Promise.all([
+  const [announcements, battles, leaderboard, memes] = await Promise.all([
     getPublicAnnouncements(),
     getApprovedBattles(),
     getLeaderboard(),
+    getPublicMemes(),
   ]);
 
   const liveBattles = battles.filter((b) => b.status === 'Live');
@@ -25,6 +25,9 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col items-center w-full min-h-screen bg-[#000000] text-white selection:bg-[#ec008c] selection:text-white">
       
+      {/* Interactive Announcement Popup Dialog */}
+      <AnnouncementPopup announcements={announcements} />
+
       {/* ================= HERO SECTION (OPTIMIZED FOR MOBILE & CLEAN DESKTOP) ================= */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-14 pb-14 sm:pb-20 relative">
         <div className="relative w-full min-h-[380px] sm:min-h-[500px] flex flex-col justify-end">
@@ -149,7 +152,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ================= AURA MEME TICKER (LIVE SCROLLING MARQUEE) ================= */}
+      {/* ================= AURA TICKER (LIVE MARQUEE) ================= */}
       <section className="w-full">
         <AuraTicker />
       </section>
@@ -242,14 +245,9 @@ export default async function HomePage() {
 
       </section>
 
-      {/* ================= INTERACTIVE DAILY AURA CALCULATOR (MEMEISH TOOL) ================= */}
+      {/* ================= MEMES SECTION: ANTI-HYPERGAMY & REACT BITS CIRCULAR CAROUSEL ================= */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-        <AuraCalculator />
-      </section>
-
-      {/* ================= AURA MEME VAULT (POPULAR AURA MEMES DISPLAY) ================= */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-        <AuraMemeVault />
+        <MemesCarouselSection memes={memes} />
       </section>
 
       {/* ================= SPOTLIGHT FEATURED BATTLE (TEASER LINKING TO /battles) ================= */}
@@ -332,13 +330,6 @@ export default async function HomePage() {
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* ================= ANNOUNCEMENTS ================= */}
-      {announcements.length > 0 && (
-        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-          <AnnouncementBanner announcements={announcements} />
         </section>
       )}
 

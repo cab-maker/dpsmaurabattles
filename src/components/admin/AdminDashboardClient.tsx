@@ -23,17 +23,25 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
-import { Battle, Location, LeaderboardEntry, Announcement, AdminStats } from '@/types/database';
+import { Battle, Location, LeaderboardEntry, Announcement, AdminStats, Meme } from '@/types/database';
 
 export default function AdminDashboardClient() {
-  const [activeTab, setActiveTab] = useState<'battles' | 'leaderboard' | 'locations' | 'announcements'>('battles');
+  const [activeTab, setActiveTab] = useState<'battles' | 'leaderboard' | 'locations' | 'announcements' | 'memes'>('battles');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [battles, setBattles] = useState<Battle[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [memes, setMemes] = useState<Meme[]>([]);
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Meme Form State
+  const [newMemeTitle, setNewMemeTitle] = useState('');
+  const [newMemeSubtitle, setNewMemeSubtitle] = useState('');
+  const [newMemeImageUrl, setNewMemeImageUrl] = useState('');
+  const [newMemeCaption, setNewMemeCaption] = useState('');
+  const [newMemePinned, setNewMemePinned] = useState(false);
 
   // Quick Approval Modal State (Date + Location)
   const [approvalModalBattle, setApprovalModalBattle] = useState<Battle | null>(null);
@@ -67,12 +75,13 @@ export default function AdminDashboardClient() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [resStats, resBattles, resLocs, resLead, resAnn] = await Promise.all([
+      const [resStats, resBattles, resLocs, resLead, resAnn, resMemes] = await Promise.all([
         fetch('/api/admin/stats').then((r) => r.json()),
         fetch('/api/admin/battles').then((r) => r.json()),
         fetch('/api/admin/locations').then((r) => r.json()),
         fetch('/api/admin/leaderboard').then((r) => r.json()),
         fetch('/api/admin/announcements').then((r) => r.json()),
+        fetch('/api/admin/memes').then((r) => r.json()),
       ]);
 
       if (resStats.stats) setStats(resStats.stats);
@@ -80,6 +89,7 @@ export default function AdminDashboardClient() {
       if (resLocs.locations) setLocations(resLocs.locations);
       if (resLead.leaderboard) setLeaderboard(resLead.leaderboard);
       if (resAnn.announcements) setAnnouncements(resAnn.announcements);
+      if (resMemes?.memes) setMemes(resMemes.memes);
     } catch {
       showToast('Error loading administrative records.');
     } finally {
@@ -315,6 +325,57 @@ export default function AdminDashboardClient() {
     }
   };
 
+  const createMeme = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemeTitle.trim() || !newMemeImageUrl.trim()) {
+      showToast('Title and Image/GIF URL are required.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/admin/memes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newMemeTitle.trim(),
+          subtitle: newMemeSubtitle.trim() || null,
+          image_url: newMemeImageUrl.trim(),
+          caption: newMemeCaption.trim() || null,
+          is_pinned: newMemePinned,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      showToast('✓ Meme / GIF published to the carousel!');
+      setNewMemeTitle('');
+      setNewMemeSubtitle('');
+      setNewMemeImageUrl('');
+      setNewMemeCaption('');
+      setNewMemePinned(false);
+      fetchData();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to publish meme');
+    }
+  };
+
+  const deleteMeme = async (id: string) => {
+    if (!confirm('Delete this meme from the carousel?')) return;
+    try {
+      const res = await fetch('/api/admin/memes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      showToast('Meme removed.');
+      fetchData();
+    } catch (err: any) {
+      showToast(err.message || 'Failed to remove meme');
+    }
+  };
+
   const pendingBattles = battles.filter((b) => b.status === 'Pending');
   const activeAndLiveBattles = battles.filter((b) => b.status === 'Upcoming' || b.status === 'Live');
   const completedBattles = battles.filter((b) => b.status === 'Completed');
@@ -455,6 +516,21 @@ export default function AdminDashboardClient() {
           >
             <Bell className="w-4 h-4" />
             <span>Homepage Announcements</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('memes')}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+              activeTab === 'memes'
+                ? 'bg-purple-600 text-white shadow-lg'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-[#ec008c]" />
+            <span>Memes & GIFs Carousel</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/10 text-neutral-300 text-[10px] font-mono">
+              {memes.length}
+            </span>
           </button>
         </div>
 
@@ -918,6 +994,155 @@ export default function AdminDashboardClient() {
           </div>
         )}
 
+        {/* ================= TAB 5: MEMES & GIFS CAROUSEL ================= */}
+        {activeTab === 'memes' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#ec008c]" />
+                <span>3D Circular Carousel Memes & GIFs</span>
+              </h2>
+              <p className="text-xs text-neutral-400">
+                Post GIFs, hypergamy illustrations, and meme images directly into the homepage 3D Circular Carousel.
+              </p>
+            </div>
+
+            {/* Post Meme Form */}
+            <form onSubmit={createMeme} className="rounded-2xl p-5 bg-[#0c0d14] border border-white/[0.08] space-y-4">
+              <h3 className="text-sm font-bold text-white">Add New Meme or GIF</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-neutral-400 mb-1">Meme Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Hypergamy Is Bad / 1M Aura Strut"
+                    value={newMemeTitle}
+                    onChange={(e) => setNewMemeTitle(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs text-white outline-none focus:border-[#ec008c]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-neutral-400 mb-1">Subtitle / Stance</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Aura Battles Corp Stance / Anime Walking Edit"
+                    value={newMemeSubtitle}
+                    onChange={(e) => setNewMemeSubtitle(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs text-white outline-none focus:border-[#ec008c]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-neutral-400 mb-1">Image or GIF URL *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. https://media1.tenor.com/...gif or /memes/hypergamy.png"
+                  value={newMemeImageUrl}
+                  onChange={(e) => setNewMemeImageUrl(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs font-mono text-white outline-none focus:border-[#ec008c]"
+                />
+                <span className="text-[10px] text-neutral-500 mt-1 block">
+                  Paste any public direct image URL (.png, .jpg, .webp) or animated GIF link (Tenor, Giphy, etc.).
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-neutral-400 mb-1">Optional Caption</label>
+                <textarea
+                  rows={2}
+                  placeholder="Context or lore behind this meme..."
+                  value={newMemeCaption}
+                  onChange={(e) => setNewMemeCaption(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs text-white outline-none focus:border-[#ec008c] resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newMemePinned}
+                    onChange={(e) => setNewMemePinned(e.target.checked)}
+                    className="rounded bg-[#08090d] border-white/20 text-[#ec008c] focus:ring-0"
+                  />
+                  <span>Pin to front of carousel</span>
+                </label>
+
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#ec008c] to-purple-600 hover:opacity-90 text-white font-bold text-xs shadow-md cursor-pointer"
+                >
+                  Publish to Carousel
+                </button>
+              </div>
+            </form>
+
+            {/* List of Existing Memes */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                Active Carousel Items ({memes.length})
+              </h3>
+
+              {memes.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {memes.map((m) => (
+                    <div
+                      key={m.id}
+                      className="rounded-2xl p-4 bg-[#0c0d14] border border-white/[0.06] flex items-center justify-between gap-4"
+                    >
+                      {/* Thumbnail */}
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-black border border-white/10 shrink-0 relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={m.image_url}
+                          alt={m.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-white text-sm truncate">{m.title}</h4>
+                          {m.is_pinned && (
+                            <span className="text-[9px] font-black uppercase px-2 py-0.2 rounded-full bg-[#ec008c]/20 text-[#ec008c] border border-[#ec008c]/30">
+                              Pinned
+                            </span>
+                          )}
+                        </div>
+                        {m.subtitle && (
+                          <p className="text-xs text-[#ec008c] font-medium truncate">{m.subtitle}</p>
+                        )}
+                        <p className="text-[10px] text-neutral-500 font-mono truncate mt-0.5">
+                          {m.image_url}
+                        </p>
+                      </div>
+
+                      {/* Action */}
+                      <button
+                        onClick={() => deleteMeme(m.id)}
+                        className="p-2 rounded-xl text-red-400 hover:bg-red-500/10 cursor-pointer shrink-0"
+                        title="Delete meme from carousel"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 rounded-2xl bg-[#0c0d14] border border-white/[0.06] text-center text-xs text-neutral-500">
+                  No memes in the database yet. Post the first one above!
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
       </div>
 
       {/* ================= MODAL: APPROVE & SCHEDULE BATTLE ================= */}

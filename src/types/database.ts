@@ -86,3 +86,14 @@ export interface ChatUser {
   ban_reason?: string | null;
   created_at: string;
 }
+
+export interface Meme {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  image_url: string;
+  caption?: string | null;
+  is_pinned?: boolean;
+  created_at: string;
+}
+
