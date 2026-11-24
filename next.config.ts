@@ -46,6 +46,7 @@ const securityHeaders = [
       img-src 'self' blob: data: https:;
       font-src 'self' data:;
       connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.vercel.app;
+      frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com;
       frame-ancestors 'none';
       object-src 'none';
       base-uri 'self';
