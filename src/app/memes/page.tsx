@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getPublicMemes } from '@/lib/db';
 import CircularCarousel, { CarouselItem } from '@/components/CircularCarousel';
+import AuraVideoSection from '@/components/AuraVideoSection';
 import { AlertTriangle, Sparkles, ShieldCheck, ArrowRight, ExternalLink } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -130,6 +131,11 @@ export default async function MemesPage() {
           </div>
 
         </div>
+      </section>
+
+      {/* ================= EDUCATIONAL DOSSIER: LESSONS IN MEME CULTURE VIDEO ================= */}
+      <section className="mb-16 sm:mb-24">
+        <AuraVideoSection />
       </section>
 
       {/* ================= MEMES SECTION: REACT BITS 3D CIRCULAR CAROUSEL ================= */}

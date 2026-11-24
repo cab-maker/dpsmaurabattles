@@ -5,6 +5,7 @@ import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles, AlertTri
 import { getPublicAnnouncements, getApprovedBattles, getLeaderboard } from '@/lib/db';
 import AnnouncementPopup from '@/components/AnnouncementPopup';
 import AuraTicker from '@/components/AuraTicker';
+import AuraVideoSection from '@/components/AuraVideoSection';
 import { formatScheduledDate } from '@/lib/dateUtils';
 
 export const dynamic = 'force-dynamic';
@@ -304,6 +305,11 @@ export default async function HomePage() {
             </span>
           </div>
         </div>
+      </section>
+
+      {/* ================= REQUIRED VIEWING / OFFICIAL AURA LORE SYLLABUS ================= */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
+        <AuraVideoSection />
       </section>
 
       {/* ================= SPOTLIGHT FEATURED BATTLE (TEASER LINKING TO /battles) ================= */}
