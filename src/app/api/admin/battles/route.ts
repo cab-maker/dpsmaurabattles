@@ -222,11 +222,20 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: true, battle: revertedBattle });
     }
 
-    // General update (Approve, reject, change location, etc.)
+    // General update (Approve, reject, change location, reschedule date, etc.)
     const payload: Record<string, unknown> = {
       ...updates,
       updated_at: new Date().toISOString(),
     };
+
+    if ('scheduled_at' in updates) {
+      if (!updates.scheduled_at || updates.scheduled_at === '' || updates.scheduled_at === 'null') {
+        payload.scheduled_at = null;
+      } else {
+        const parsed = new Date(updates.scheduled_at as string);
+        payload.scheduled_at = isNaN(parsed.getTime()) ? null : parsed.toISOString();
+      }
+    }
 
     if (updates.status === 'Upcoming' || updates.status === 'Live') {
       payload.approved_at = new Date().toISOString();

@@ -1,10 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles, AlertTriangle } from 'lucide-react';
+import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles, AlertTriangle, Calendar } from 'lucide-react';
 import { getPublicAnnouncements, getApprovedBattles, getLeaderboard } from '@/lib/db';
 import AnnouncementPopup from '@/components/AnnouncementPopup';
 import AuraTicker from '@/components/AuraTicker';
+import { formatScheduledDate } from '@/lib/dateUtils';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -310,10 +311,23 @@ export default async function HomePage() {
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
           <div className="rounded-3xl p-6 sm:p-10 bg-[#0a0a0a] border border-neutral-900 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
             <div className="max-w-lg">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ec008c]/20 text-[#ec008c] border border-[#ec008c]/30 mb-3">
-                <Flame className="w-3.5 h-3.5" />
-                Featured Arena Clash
-              </span>
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ec008c]/20 text-[#ec008c] border border-[#ec008c]/30">
+                  <Flame className="w-3.5 h-3.5" />
+                  {featuredBattle.category}
+                </span>
+                {featuredBattle.scheduled_at ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-white/[0.08] border border-white/[0.12] text-white">
+                    <Calendar className="w-3.5 h-3.5 text-[#ec008c]" />
+                    <span>{formatScheduledDate(featuredBattle.scheduled_at)}</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-neutral-400 bg-neutral-900 border border-neutral-800">
+                    <Calendar className="w-3 h-3 text-neutral-400" />
+                    <span>Date TBA</span>
+                  </span>
+                )}
+              </div>
               <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 {featuredBattle.person_one} <span className="text-neutral-500 font-normal">vs</span> {featuredBattle.person_two}
               </h3>

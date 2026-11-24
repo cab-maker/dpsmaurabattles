@@ -24,6 +24,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Battle, Location, LeaderboardEntry, Announcement, AdminStats, Meme } from '@/types/database';
+import { formatScheduledDate, toDatetimeLocal } from '@/lib/dateUtils';
 
 export default function AdminDashboardClient() {
   const [activeTab, setActiveTab] = useState<'battles' | 'leaderboard' | 'locations' | 'announcements' | 'memes'>('battles');
@@ -52,6 +53,11 @@ export default function AdminDashboardClient() {
   // Winner Modal State
   const [winnerModalBattle, setWinnerModalBattle] = useState<Battle | null>(null);
   const [selectedWinner, setSelectedWinner] = useState('');
+
+  // Reschedule Date Modal State
+  const [rescheduleBattle, setRescheduleBattle] = useState<Battle | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState('');
+  const [isSavingSchedule, setIsSavingSchedule] = useState(false);
 
   // Location Form State
   const [newLocName, setNewLocName] = useState('');
@@ -145,6 +151,33 @@ export default function AdminDashboardClient() {
     } catch (err: any) {
       showToast(err.message || 'Failed to update battle');
     }
+  };
+
+  const openRescheduleModal = (b: Battle) => {
+    setRescheduleBattle(b);
+    setRescheduleDate(toDatetimeLocal(b.scheduled_at));
+  };
+
+  const saveReschedule = async () => {
+    if (!rescheduleBattle) return;
+    setIsSavingSchedule(true);
+    try {
+      const newScheduledAt = rescheduleDate ? new Date(rescheduleDate).toISOString() : null;
+      await updateBattleField(rescheduleBattle.id, { scheduled_at: newScheduledAt });
+      showToast(newScheduledAt ? '✓ Match date updated!' : '✓ Match date cleared (set to TBA).');
+      setRescheduleBattle(null);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update match date');
+    } finally {
+      setIsSavingSchedule(false);
+    }
+  };
+
+  const setQuickPresetTime = (hours: number, minutes: number, daysFromNow: number = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysFromNow);
+    d.setHours(hours, minutes, 0, 0);
+    setRescheduleDate(toDatetimeLocal(d.toISOString()));
   };
 
   const deleteBattle = async (id: string) => {
@@ -636,8 +669,23 @@ export default function AdminDashboardClient() {
                       {activeAndLiveBattles.map((b) => (
                         <tr key={b.id} className="hover:bg-white/[0.02]">
                           <td className="px-4 py-3.5">
-                            <p className="font-bold text-white">{b.person_one} vs {b.person_two}</p>
-                            <span className="text-[10px] text-neutral-400">{b.category}</span>
+                            <p className="font-bold text-white text-sm">{b.person_one} vs {b.person_two}</p>
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <span className="text-[10px] text-[#ec008c] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ec008c]/15 border border-[#ec008c]/30">
+                                {b.category}
+                              </span>
+                              {b.scheduled_at ? (
+                                <span className="inline-flex items-center gap-1 text-[11px] text-cyan-300 font-bold bg-cyan-950/40 border border-cyan-800/50 px-2 py-0.5 rounded-full">
+                                  <Calendar className="w-3 h-3 text-cyan-400" />
+                                  {formatScheduledDate(b.scheduled_at)}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-neutral-500 font-medium bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded-full">
+                                  <Clock className="w-2.5 h-2.5 text-neutral-600" />
+                                  Date TBA
+                                </span>
+                              )}
+                            </div>
                           </td>
 
                           <td className="px-4 py-3.5">
@@ -665,19 +713,46 @@ export default function AdminDashboardClient() {
                             </select>
                           </td>
 
-                          <td className="px-4 py-3.5 text-xs text-neutral-300">
-                            {b.scheduled_at ? (
-                              <span className="font-medium text-cyan-300">
-                                {new Date(b.scheduled_at).toLocaleDateString(undefined, {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </span>
-                            ) : (
-                              <span className="text-neutral-400 italic">Unscheduled</span>
-                            )}
+                          <td className="px-4 py-3.5">
+                            <div className="flex items-center gap-2">
+                              <div className="min-w-0">
+                                {b.scheduled_at ? (
+                                  <div className="flex flex-col">
+                                    <span className="font-bold text-cyan-300 text-xs flex items-center gap-1">
+                                      <Calendar className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                                      <span>
+                                        {new Date(b.scheduled_at).toLocaleDateString(undefined, {
+                                          month: 'short',
+                                          day: 'numeric',
+                                        })}
+                                        {', '}
+                                        {new Date(b.scheduled_at).toLocaleTimeString(undefined, {
+                                          hour: 'numeric',
+                                          minute: '2-digit',
+                                        })}
+                                      </span>
+                                    </span>
+                                    <span className="text-[10px] text-neutral-500 font-medium">
+                                      {formatScheduledDate(b.scheduled_at)}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-neutral-500 text-xs italic flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5 text-neutral-600 shrink-0" />
+                                    Unscheduled
+                                  </span>
+                                )}
+                              </div>
+
+                              <button
+                                onClick={() => openRescheduleModal(b)}
+                                className="px-2.5 py-1 rounded-lg bg-white/[0.08] hover:bg-[#ec008c]/20 hover:text-[#ec008c] text-neutral-300 text-[11px] font-bold border border-white/[0.1] hover:border-[#ec008c]/40 transition-colors flex items-center gap-1 shrink-0 cursor-pointer active:scale-95"
+                                title="Change match date"
+                              >
+                                <Edit2 className="w-3 h-3" />
+                                <span>Modify Date</span>
+                              </button>
+                            </div>
                           </td>
 
                           <td className="px-4 py-3.5 text-right space-x-2">
@@ -718,18 +793,50 @@ export default function AdminDashboardClient() {
                       <th className="px-4 py-3">Contestants</th>
                       <th className="px-4 py-3">Winner</th>
                       <th className="px-4 py-3">Location</th>
+                      <th className="px-4 py-3">Schedule Date</th>
                       <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[0.04]">
                     {completedBattles.map((b) => (
                       <tr key={b.id} className="hover:bg-white/[0.02]">
-                        <td className="px-4 py-3 font-medium text-white">{b.person_one} vs {b.person_two}</td>
+                        <td className="px-4 py-3 font-medium text-white">
+                          <p className="font-bold text-white">{b.person_one} vs {b.person_two}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] text-neutral-400">{b.category}</span>
+                            {b.scheduled_at && (
+                              <span className="text-[10px] text-cyan-300 font-semibold">
+                                • {formatScheduledDate(b.scheduled_at)}
+                              </span>
+                            )}
+                          </div>
+                        </td>
                         <td className="px-4 py-3 font-bold text-amber-300 flex items-center gap-1.5">
                           <Trophy className="w-3.5 h-3.5" />
                           <span>{b.winner_name}</span>
                         </td>
                         <td className="px-4 py-3 text-xs text-neutral-400">{b.location?.name || 'Campus'}</td>
+                        <td className="px-4 py-3 text-xs text-neutral-300">
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {b.scheduled_at
+                                ? new Date(b.scheduled_at).toLocaleDateString(undefined, {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })
+                                : 'No date'}
+                            </span>
+                            <button
+                              onClick={() => openRescheduleModal(b)}
+                              className="p-1 rounded hover:bg-white/[0.1] text-neutral-400 hover:text-white"
+                              title="Modify match date"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-right space-x-2">
                           <button
                             onClick={() => revertCompletion(b.id)}
@@ -1219,8 +1326,51 @@ export default function AdminDashboardClient() {
                   type="datetime-local"
                   value={approveScheduledDate}
                   onChange={(e) => setApproveScheduledDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs text-white outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.1] text-xs text-white outline-none focus:border-emerald-500 font-medium"
                 />
+                <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setHours(14, 30, 0, 0);
+                      setApproveScheduledDate(toDatetimeLocal(d.toISOString()));
+                    }}
+                    className="px-2 py-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[10px] text-neutral-300 font-medium border border-white/[0.06]"
+                  >
+                    Today 2:30 PM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setHours(15, 30, 0, 0);
+                      setApproveScheduledDate(toDatetimeLocal(d.toISOString()));
+                    }}
+                    className="px-2 py-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[10px] text-neutral-300 font-medium border border-white/[0.06]"
+                  >
+                    Today 3:30 PM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() + 1);
+                      d.setHours(12, 0, 0, 0);
+                      setApproveScheduledDate(toDatetimeLocal(d.toISOString()));
+                    }}
+                    className="px-2 py-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-[10px] text-neutral-300 font-medium border border-white/[0.06]"
+                  >
+                    Tomorrow 12:00 PM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setApproveScheduledDate('')}
+                    className="px-2 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[10px] text-red-300 font-medium border border-red-500/20"
+                  >
+                    Clear Date
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1290,6 +1440,116 @@ export default function AdminDashboardClient() {
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-95 text-black font-extrabold text-xs shadow-md"
               >
                 Confirm Victor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: MODIFY / RESCHEDULE BATTLE DATE ================= */}
+      {rescheduleBattle && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-3xl p-6 sm:p-8 max-w-lg w-full bg-[#0c0e15] border border-[#ec008c]/40 shadow-2xl space-y-5">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ec008c]/15 border border-[#ec008c]/30 text-pink-300 text-xs font-bold mb-2">
+                <Calendar className="w-3.5 h-3.5 text-[#ec008c]" /> Modify Match Schedule
+              </div>
+              <h3 className="text-xl font-black text-white">
+                {rescheduleBattle.person_one} <span className="text-neutral-500 font-normal">vs</span> {rescheduleBattle.person_two}
+              </h3>
+              <p className="text-xs text-neutral-400 mt-1">
+                Category: <strong className="text-white">{rescheduleBattle.category}</strong>. Change or clear the match date and time shown next to the battle title across the arena.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
+                  Scheduled Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#08090d] border border-white/[0.15] text-xs text-white outline-none focus:border-[#ec008c] font-medium transition-colors"
+                />
+                <p className="text-[11px] text-neutral-400 mt-1.5 flex items-center gap-1.5">
+                  <span>Display Badge Preview:</span>
+                  <span className="text-pink-300 font-bold bg-[#ec008c]/10 border border-[#ec008c]/30 px-2 py-0.5 rounded-full">
+                    {rescheduleDate ? formatScheduledDate(new Date(rescheduleDate).toISOString()) : 'Date TBA'}
+                  </span>
+                </p>
+              </div>
+
+              {/* Quick Presets */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
+                  Quick Time Presets
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setQuickPresetTime(14, 30, 0)}
+                    className="px-2.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 font-medium border border-white/[0.08] transition-colors"
+                  >
+                    Today 2:30 PM (Lunch)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickPresetTime(15, 30, 0)}
+                    className="px-2.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 font-medium border border-white/[0.08] transition-colors"
+                  >
+                    Today 3:30 PM (Dispersal)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickPresetTime(12, 0, 1)}
+                    className="px-2.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 font-medium border border-white/[0.08] transition-colors"
+                  >
+                    Tomorrow 12:00 PM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickPresetTime(15, 30, 1)}
+                    className="px-2.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 font-medium border border-white/[0.08] transition-colors"
+                  >
+                    Tomorrow 3:30 PM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickPresetTime(15, 0, 2)}
+                    className="px-2.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-[11px] text-neutral-300 font-medium border border-white/[0.08] transition-colors"
+                  >
+                    In 2 Days (3:00 PM)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRescheduleDate('')}
+                    className="px-2.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[11px] text-red-300 font-bold border border-red-500/20 transition-colors"
+                  >
+                    Clear Date (Set TBA)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setRescheduleBattle(null)}
+                className="px-4 py-2 rounded-xl text-neutral-400 hover:text-white text-xs font-semibold"
+                disabled={isSavingSchedule}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveReschedule}
+                disabled={isSavingSchedule}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#ec008c] to-purple-600 hover:opacity-95 text-white font-bold text-xs shadow-lg shadow-[#ec008c]/25 flex items-center gap-1.5 active:scale-95 transition-all"
+              >
+                <Calendar className="w-3.5 h-3.5" />
+                <span>{isSavingSchedule ? 'Saving...' : 'Save Schedule Date'}</span>
               </button>
             </div>
           </div>

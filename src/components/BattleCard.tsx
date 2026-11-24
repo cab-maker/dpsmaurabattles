@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Battle } from '@/types/database';
 import { MapPin, Calendar, Trophy, Flame, Zap, Check } from 'lucide-react';
+import { formatScheduledDate } from '@/lib/dateUtils';
 
 interface BattleCardProps {
   battle: Battle;
@@ -75,12 +76,27 @@ export default function BattleCard({ battle }: BattleCardProps) {
       />
 
       <div>
-        {/* Category & Status Bar */}
-        <div className="flex items-center justify-between gap-2 mb-5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-neutral-900 border border-neutral-800 text-neutral-300">
-            {isMog ? <Flame className="w-3.5 h-3.5 text-[#ec008c]" /> : <Zap className="w-3.5 h-3.5 text-neutral-400" />}
-            {battle.category}
-          </span>
+        {/* Category, Scheduled Date & Status Bar */}
+        <div className="flex items-center justify-between gap-2 mb-5 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-neutral-900 border border-neutral-800 text-neutral-200">
+              {isMog ? <Flame className="w-3.5 h-3.5 text-[#ec008c]" /> : <Zap className="w-3.5 h-3.5 text-[#ec008c]" />}
+              <span>{battle.category}</span>
+            </span>
+
+            {/* Prominent Scheduled Date Badge next to Aura Battles badge */}
+            {battle.scheduled_at ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-[#ec008c]/15 border border-[#ec008c]/40 text-pink-300 shadow-[0_0_12px_rgba(236,0,140,0.25)]">
+                <Calendar className="w-3.5 h-3.5 text-[#ec008c]" />
+                <span>{formatScheduledDate(battle.scheduled_at)}</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold text-neutral-400 bg-neutral-900/80 border border-neutral-800/80">
+                <Calendar className="w-3 h-3 text-neutral-400" />
+                <span>Date TBA</span>
+              </span>
+            )}
+          </div>
 
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
@@ -224,18 +240,23 @@ export default function BattleCard({ battle }: BattleCardProps) {
         </div>
 
         {battle.scheduled_at ? (
-          <div className="flex items-center gap-1 shrink-0 text-neutral-400">
-            <Calendar className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 shrink-0 text-neutral-300">
+            <Calendar className="w-3.5 h-3.5 text-[#ec008c]" />
             <span>
               {new Date(battle.scheduled_at).toLocaleDateString(undefined, {
                 month: 'short',
                 day: 'numeric',
               })}
+              {', '}
+              {new Date(battle.scheduled_at).toLocaleTimeString(undefined, {
+                hour: 'numeric',
+                minute: '2-digit',
+              })}
             </span>
           </div>
         ) : (
           <span className="text-[11px] text-neutral-500">
-            {new Date(battle.created_at).toLocaleDateString(undefined, {
+            Created: {new Date(battle.created_at).toLocaleDateString(undefined, {
               month: 'short',
               day: 'numeric',
             })}
