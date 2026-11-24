@@ -33,6 +33,7 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-6 sm:gap-8 text-xs font-semibold tracking-tight text-neutral-400">
             <Link href="/battles" className="hover:text-white transition-colors">Battles</Link>
             <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+            <Link href="/memes" className="hover:text-white transition-colors">Memes</Link>
             <Link href="/gc" className="hover:text-white transition-colors">Group Chat</Link>
             <Link href="/call" className="hover:text-white transition-colors">Call Arena</Link>
             <Link href="/submit" className="hover:text-white transition-colors">Submit</Link>

@@ -1,21 +1,19 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles } from 'lucide-react';
-import { getPublicAnnouncements, getApprovedBattles, getLeaderboard, getPublicMemes } from '@/lib/db';
+import { Swords, Trophy, ArrowRight, Flame, Zap, ShieldAlert, Sparkles, AlertTriangle } from 'lucide-react';
+import { getPublicAnnouncements, getApprovedBattles, getLeaderboard } from '@/lib/db';
 import AnnouncementPopup from '@/components/AnnouncementPopup';
 import AuraTicker from '@/components/AuraTicker';
-import MemesCarouselSection from '@/components/MemesCarouselSection';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function HomePage() {
-  const [announcements, battles, leaderboard, memes] = await Promise.all([
+  const [announcements, battles, leaderboard] = await Promise.all([
     getPublicAnnouncements(),
     getApprovedBattles(),
     getLeaderboard(),
-    getPublicMemes(),
   ]);
 
   const liveBattles = battles.filter((b) => b.status === 'Live');
@@ -220,6 +218,16 @@ export default async function HomePage() {
             </Link>
 
             <Link
+              href="/memes"
+              className="group flex items-center justify-between py-2 text-sm sm:text-base font-bold text-neutral-400 hover:text-white transition-colors duration-150 border-b border-neutral-900 pb-2.5"
+            >
+              <span>Hypergamy directive & memes vault.</span>
+              <span className="text-base sm:text-lg transform group-hover:translate-x-2 transition-transform duration-200 text-neutral-500 group-hover:text-[#ec008c]">
+                →
+              </span>
+            </Link>
+
+            <Link
               href="/submit"
               className="group flex items-center justify-between py-2 text-sm sm:text-base font-bold text-neutral-400 hover:text-white transition-colors duration-150 border-b border-neutral-900 pb-2.5"
             >
@@ -245,9 +253,56 @@ export default async function HomePage() {
 
       </section>
 
-      {/* ================= MEMES SECTION: ANTI-HYPERGAMY & REACT BITS CIRCULAR CAROUSEL ================= */}
+      {/* ================= DIRECTIVE & MEMES SPOTLIGHT ================= */}
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-        <MemesCarouselSection memes={memes} />
+        <div className="rounded-3xl p-6 sm:p-10 bg-gradient-to-b from-[#180308] via-[#0d0d0d] to-[#0a0a0a] border-2 border-red-700/60 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden">
+          <div className="max-w-xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-black uppercase tracking-wider bg-red-950 text-red-300 border border-red-700 mb-3">
+              <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+              DIRECTIVE #001 • TOP PRIORITY
+            </span>
+            <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase">
+              HYPERGAMY IS BAD.
+            </h3>
+            <p className="text-xs sm:text-sm font-bold text-[#ec008c] mt-1 uppercase">
+              AURA BATTLES CORP IS STRICTLY AGAINST HYPERGAMY.
+            </p>
+            <p className="text-xs sm:text-sm text-neutral-300 mt-3 font-medium leading-relaxed">
+              We condemn skewed concentration vectors where majority attention is funneled into artificial inequality. Explore the full directive breakdown and spin the 3D Meme Orbit Arena on our dedicated memes page.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link
+                href="/memes"
+                className="rounded-full bg-white text-black hover:bg-neutral-200 px-6 py-3 text-xs font-black tracking-tight transition-all active:scale-95 shadow-md inline-flex items-center gap-2"
+              >
+                <span>View Directive & 3D Meme Orbit</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* High-Contrast White Background Card for Diagram Visibility */}
+          <div className="w-full max-w-[210px] sm:max-w-[240px] rounded-3xl p-4 bg-white border-2 border-neutral-200 shadow-2xl flex flex-col items-center shrink-0">
+            <div className="text-center mb-1.5">
+              <span className="text-[9px] font-mono font-black text-neutral-600 uppercase">
+                Figure 1.0 Breakdown
+              </span>
+            </div>
+            <div className="relative w-full aspect-[1/1.7] bg-white">
+              <Image
+                src="/memes/hypergamy.png"
+                alt="Hypergamy diagram - clear visibility with black arrows"
+                fill
+                priority
+                className="object-contain"
+                sizes="240px"
+              />
+            </div>
+            <span className="text-[9px] font-mono font-bold text-red-600 uppercase mt-1.5 text-center">
+              Divergence Vector
+            </span>
+          </div>
+        </div>
       </section>
 
       {/* ================= SPOTLIGHT FEATURED BATTLE (TEASER LINKING TO /battles) ================= */}

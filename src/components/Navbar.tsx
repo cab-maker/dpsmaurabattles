@@ -12,6 +12,7 @@ export default function Navbar() {
   const navItems = [
     { name: 'Battles', href: '/battles' },
     { name: 'Leaderboard', href: '/leaderboard' },
+    { name: 'Memes', href: '/memes' },
     { name: 'Group Chat', href: '/gc', badge: 'GC' },
     { name: 'Call Arena', href: '/call', badge: 'LIVE' },
   ];
