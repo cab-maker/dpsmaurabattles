@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { getPublicMemes } from '@/lib/db';
 import CircularCarousel, { CarouselItem } from '@/components/CircularCarousel';
 import AuraVideoSection from '@/components/AuraVideoSection';
-import { AlertTriangle, Sparkles, ShieldCheck, ArrowRight, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Sparkles, ShieldCheck, ArrowRight, ExternalLink, Play } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -35,9 +35,50 @@ export default async function MemesPage() {
     });
   }
 
+  // Ensure YouTube video is also in the 3D Carousel
+  if (!carouselItems.some((item) => item.src.includes('5ctTVpQstC0'))) {
+    carouselItems.unshift({
+      src: 'https://i.ytimg.com/vi/5ctTVpQstC0/hqdefault.jpg',
+      alt: 'Aura Farm Battles Are Here - Lessons in Meme Culture',
+      title: 'Aura Farm Battles Video',
+      subtitle: 'Official Lore by Lessons in Meme Culture',
+    });
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 bg-[#000000] text-white selection:bg-[#ec008c] selection:text-white">
       
+      {/* ================= TOP ANNOUNCEMENT: REQUIRED VIDEO LORE BANNER ================= */}
+      <div className="mb-8 p-3.5 sm:p-4 rounded-2xl bg-[#0c0d14] border border-[#ec008c]/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-lg shadow-[#ec008c]/5">
+        <div className="flex items-center gap-2.5 text-neutral-200">
+          <span className="px-2 py-0.5 rounded-md bg-red-600 text-white font-black text-[10px] tracking-wider uppercase shrink-0">
+            YOUTUBE
+          </span>
+          <span className="font-semibold text-white">
+            Required Lore: <strong>Lessons in Meme Culture — Aura Farm Battles Are Here</strong>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href="#aura-video-briefing"
+            className="px-3.5 py-1.5 rounded-xl bg-[#ec008c] text-white font-bold text-xs hover:opacity-90 flex items-center gap-1.5 transition-all shadow-md active:scale-95"
+          >
+            <Play className="w-3.5 h-3.5 fill-white" />
+            <span>Watch Video Below</span>
+          </a>
+          <a
+            href="https://www.youtube.com/watch?v=5ctTVpQstC0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white font-semibold text-xs flex items-center gap-1 transition-all"
+          >
+            <span>Direct YouTube Link</span>
+            <ExternalLink className="w-3 h-3 text-[#ec008c]" />
+          </a>
+        </div>
+      </div>
+
       {/* ================= TOP SECTION: HYPERGAMY IS BAD (HIGH-CONTRAST WHITE CARD) ================= */}
       <section className="mb-16 sm:mb-24">
         <div className="rounded-3xl p-6 sm:p-12 bg-gradient-to-b from-[#180308] via-[#0d0d0d] to-[#0a0a0a] border-2 border-red-700/60 shadow-[0_25px_60px_rgba(0,0,0,0.9)] relative overflow-hidden">

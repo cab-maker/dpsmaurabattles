@@ -10,7 +10,10 @@ interface AuraVideoSectionProps {
 
 export default function AuraVideoSection({ compact = false }: AuraVideoSectionProps) {
   return (
-    <div className="rounded-3xl p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-[#111116] via-[#0a0a0d] to-[#070709] border border-neutral-800 shadow-[0_25px_60px_rgba(0,0,0,0.9)] relative overflow-hidden">
+    <div
+      id="aura-video-briefing"
+      className="rounded-3xl p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-[#111116] via-[#0a0a0d] to-[#070709] border border-neutral-800 shadow-[0_25px_60px_rgba(0,0,0,0.9)] relative overflow-hidden"
+    >
       
       {/* Background Subtle Accent Glow */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#ec008c]/10 rounded-full blur-[120px] pointer-events-none" />
@@ -23,15 +26,18 @@ export default function AuraVideoSection({ compact = false }: AuraVideoSectionPr
           <span>OFFICIAL AURA SYLLABUS • REQUIRED VIEWING</span>
         </div>
 
-        <a
-          href="https://www.youtube.com/watch?v=5ctTVpQstC0"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white text-xs font-semibold transition-colors"
-        >
-          <span>Watch on YouTube</span>
-          <ExternalLink className="w-3.5 h-3.5 text-[#ec008c]" />
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://www.youtube.com/watch?v=5ctTVpQstC0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md shadow-red-600/30 transition-all active:scale-95"
+          >
+            <Play className="w-3.5 h-3.5 fill-white" />
+            <span>Open on YouTube (5ctTVpQstC0)</span>
+            <ExternalLink className="w-3 h-3 ml-0.5" />
+          </a>
+        </div>
       </div>
 
       {/* Main Grid: Video Player + Educational Dossier */}
@@ -40,29 +46,38 @@ export default function AuraVideoSection({ compact = false }: AuraVideoSectionPr
         {/* Left: Responsive Video Embed */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
           <div className="relative aspect-video w-full rounded-2xl overflow-hidden border-2 border-neutral-800 group hover:border-[#ec008c]/50 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-black">
+            {/* Background Poster Image so if iframe is blocked by ad-blocker or school firewall, it never shows a blank grey void */}
+            <div
+              className="absolute inset-0 bg-cover bg-center pointer-events-none opacity-40"
+              style={{ backgroundImage: `url('https://i.ytimg.com/vi/5ctTVpQstC0/hqdefault.jpg')` }}
+            />
+
             <iframe
               src="https://www.youtube.com/embed/5ctTVpQstC0?rel=0&modestbranding=1"
               title="Lessons in Meme Culture — Aura Farm Battles Are Here"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
-              className="w-full h-full border-0 absolute inset-0"
+              className="w-full h-full border-0 absolute inset-0 z-10"
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between text-xs text-neutral-400 font-mono px-1 gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-neutral-400 font-mono px-1 gap-2.5">
             <span className="flex items-center gap-1.5 text-neutral-300">
               <Sparkles className="w-3.5 h-3.5 text-[#ec008c]" />
               <strong>Author:</strong> Lessons in Meme Culture (LIMC)
             </span>
-            <a
-              href="https://www.youtube.com/watch?v=5ctTVpQstC0"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#ec008c] hover:underline font-bold flex items-center gap-1 shrink-0"
-            >
-              <span>Watch directly on YouTube (5ctTVpQstC0) ↗</span>
-            </a>
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] text-neutral-500">Duration: ~3:12</span>
+              <a
+                href="https://www.youtube.com/watch?v=5ctTVpQstC0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-red-400 hover:text-red-300 font-bold flex items-center gap-1 shrink-0 underline"
+              >
+                <span>Direct Video Link (If embed blocked) ↗</span>
+              </a>
+            </div>
           </div>
         </div>
 
