@@ -41,7 +41,7 @@ export default function AuraVideoSection({ compact = false }: AuraVideoSectionPr
         <div className="lg:col-span-7 flex flex-col space-y-4">
           <div className="relative aspect-video w-full rounded-2xl overflow-hidden border-2 border-neutral-800 group hover:border-[#ec008c]/50 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.8)] bg-black">
             <iframe
-              src="https://www.youtube-nocookie.com/embed/5ctTVpQstC0"
+              src="https://www.youtube.com/embed/5ctTVpQstC0?rel=0&modestbranding=1"
               title="Lessons in Meme Culture — Aura Farm Battles Are Here"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -50,12 +50,19 @@ export default function AuraVideoSection({ compact = false }: AuraVideoSectionPr
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs text-neutral-400 font-mono px-1">
+          <div className="flex flex-wrap items-center justify-between text-xs text-neutral-400 font-mono px-1 gap-2">
             <span className="flex items-center gap-1.5 text-neutral-300">
               <Sparkles className="w-3.5 h-3.5 text-[#ec008c]" />
               <strong>Author:</strong> Lessons in Meme Culture (LIMC)
             </span>
-            <span>Duration: ~3:12 • Verified Cultural Lore</span>
+            <a
+              href="https://www.youtube.com/watch?v=5ctTVpQstC0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#ec008c] hover:underline font-bold flex items-center gap-1 shrink-0"
+            >
+              <span>Watch directly on YouTube (5ctTVpQstC0) ↗</span>
+            </a>
           </div>
         </div>
 
