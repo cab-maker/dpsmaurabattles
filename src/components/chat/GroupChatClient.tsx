@@ -182,6 +182,7 @@ export default function GroupChatClient({ initialMessages }: { initialMessages: 
 
   const handleLockSite = () => {
     try {
+      sessionStorage.removeItem('aura_unlocked_session');
       localStorage.removeItem('aura_unlocked');
       window.location.reload();
     } catch {
@@ -233,7 +234,7 @@ export default function GroupChatClient({ initialMessages }: { initialMessages: 
 
           <button
             onClick={handleLockSite}
-            title="Lock Website (Trigger FBI Seizure Notice)"
+            title="Lock Website (Show Apology Notice)"
             className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-semibold text-red-400 transition-all cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5" />

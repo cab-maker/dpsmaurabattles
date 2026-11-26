@@ -70,18 +70,17 @@ export default function Navbar() {
 
           {/* Right Action: Huge Inc Signature White Pill Button & Quick Access */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Seizure Notice Toggle */}
+            {/* Apology Notice Lock Toggle */}
             <button
               onClick={() => {
                 sessionStorage.removeItem('aura_unlocked_session');
                 localStorage.removeItem('aura_unlocked');
                 window.location.reload();
               }}
-              title="Test Official FBI Seizure Notice"
-              className="px-2.5 py-1 rounded-full bg-red-950/60 hover:bg-red-900/80 border border-red-700/50 text-[10px] font-mono font-bold text-red-300 flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+              title="Lock Site & Show Apology Notice"
+              className="px-2.5 py-1 rounded-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono font-bold text-neutral-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-              <span>SEIZED NOTICE</span>
+              <span>APOLOGY NOTICE</span>
             </button>
 
             {/* Admin Portal Icon */}
@@ -155,9 +154,9 @@ export default function Navbar() {
                 localStorage.removeItem('aura_unlocked');
                 window.location.reload();
               }}
-              className="text-xs font-mono text-red-400 font-bold"
+              className="text-xs font-mono text-neutral-400 hover:text-white font-bold"
             >
-              🚨 Re-lock with Seizure Notice
+              🔒 Re-lock with Apology Notice
             </button>
             <Link
               href="/admin"

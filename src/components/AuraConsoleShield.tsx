@@ -23,9 +23,9 @@ export default function AuraConsoleShield() {
     );
 
     console.log(
-      '%c🚨 OFFICIAL NOTICE: THIS WEBSITE HAS BEEN SEIZED 🚨\n' +
-      'The domain dpsmaurabattles.vercel.app has been seized by the United States Government in accordance with a seizure warrant issued pursuant to 18 U.S.C. §§ 981, 982, and 50 U.S.C. 1701-1705 as part of a law enforcement action by the Bureau of Industry and Security, Office of Export Enforcement and Federal Bureau of Investigation.',
-      'background: #c20104; color: #ffffff; font-weight: bold; font-size: 13px; padding: 8px 14px; border-radius: 6px; line-height: 1.5;'
+      '%c📋 AN APOLOGY TO THE SCHOOL 📋\n' +
+      'We sincerely apologize to the school for creating and running this website. We will not run such aura battles or similar events going forward.',
+      'background: #18181b; color: #f4f4f5; font-weight: bold; font-size: 13px; padding: 8px 14px; border-radius: 6px; border: 1px solid #3f3f46; line-height: 1.5;'
     );
 
     console.log(
